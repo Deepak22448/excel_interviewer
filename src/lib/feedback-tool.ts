@@ -58,7 +58,6 @@ export const generateFeedbackTool = tool({
         \n`,
         schema: InterviewFeedbackSchema,
       });
-      console.log({ result });
 
       return {
         success: true,
