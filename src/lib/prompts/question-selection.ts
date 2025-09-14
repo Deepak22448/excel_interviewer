@@ -1,3 +1,5 @@
+import { getQuestionSelectionInfo } from "../question-bank";
+
 export const questionSelectionSystemPrompt = `
 You are an intelligent Excel interview question selector analyzing candidate performance to select optimal questions.
 
@@ -16,7 +18,7 @@ DIFFICULTY GUIDELINES:
 `;
 
 export const createQuestionSelectionPrompt = (
-  selectionData: any,
+  selectionData: ReturnType<typeof getQuestionSelectionInfo>,
   candidatePerformanceSummary: string,
   conversationHistory: string,
   currentQuestionCount: number,

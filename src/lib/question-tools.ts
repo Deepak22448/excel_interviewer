@@ -2,10 +2,8 @@ import { generateObject } from "ai";
 import { tool } from "ai";
 import { z } from "zod";
 import { EXCEL_QUESTIONS, getQuestionSelectionInfo } from "./question-bank";
-import {
-  QuestionSelectionSchema,
-  ResponseEvaluationSchema,
-} from "./question-schemas";
+import { QuestionSelectionSchema } from "./question-selection-schema";
+import { ResponseEvaluationSchema } from "./response-evaluation-schema";
 import { model } from "./model";
 import {
   questionSelectionSystemPrompt,
@@ -105,12 +103,6 @@ export const evaluateResponseTool = tool({
     candidateResponse: z
       .string()
       .describe("The candidate's complete response to analyze"),
-    expectedComponents: z
-      .array(z.string())
-      .describe("Expected components of a good answer"),
-    followUpTriggers: z
-      .array(z.string())
-      .describe("Specific triggers that indicate need for follow-up"),
     currentFollowUpCount: z
       .number()
       .describe("Number of follow-ups already asked for this question"),
@@ -126,8 +118,6 @@ export const evaluateResponseTool = tool({
   execute: async ({
     originalQuestion,
     candidateResponse,
-    expectedComponents,
-    followUpTriggers,
     currentFollowUpCount,
     questionCategory,
     conversationContext,
@@ -154,8 +144,6 @@ export const evaluateResponseTool = tool({
         prompt: createResponseEvaluationPrompt(
           originalQuestion,
           candidateResponse,
-          expectedComponents,
-          followUpTriggers,
           questionCategory,
           currentFollowUpCount,
           conversationContext

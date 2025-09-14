@@ -166,14 +166,21 @@ Edit `src/lib/question-bank.ts` to add new Excel questions:
 
 ```typescript
 {
-  id: "new-question",
-  title: "Your Question Title",
-  difficulty: "Intermediate",
-  category: "Formulas",
+  id: 17,
   question: "Your question text...",
-  constraints: ["Constraint 1", "Constraint 2"],
-  hints: ["Hint 1", "Hint 2"],
-  expectedComponents: ["Component 1", "Component 2"]
+  category: "formulas",
+  difficulty: "Intermediate",
+  constraints: {
+    dataSize: "Data size specification",
+    excelVersion: "Excel version requirement",
+    assumptions: ["Assumption 1", "Assumption 2"],
+    limitations: ["Limitation 1", "Limitation 2"]
+  },
+  hints: {
+    approach: "Suggested approach description",
+    functions: ["Function1", "Function2"],
+    concepts: ["Concept 1", "Concept 2"]
+  }
 }
 ```
 

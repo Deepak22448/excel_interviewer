@@ -31,8 +31,6 @@ QUESTION CATEGORY CONSIDERATIONS:
 export const createResponseEvaluationPrompt = (
   originalQuestion: string,
   candidateResponse: string,
-  expectedComponents: string[],
-  followUpTriggers: string[],
   questionCategory: string,
   currentFollowUpCount: number,
   conversationContext: string
@@ -41,11 +39,9 @@ Evaluate this candidate response comprehensively:
 
 - ORIGINAL QUESTION: ${originalQuestion}
 - CANDIDATE RESPONSE: ${candidateResponse}
-- EXPECTED COMPONENTS: ${expectedComponents.join(", ")}
-- FOLLOW-UP TRIGGERS: ${followUpTriggers.join(", ")}
 - QUESTION CATEGORY: ${questionCategory}
 - CURRENT FOLLOW-UP COUNT: ${currentFollowUpCount}/2
 - CONVERSATION CONTEXT: ${conversationContext}
 
-Provide evaluation, feedback, and determine next interview action.
+Provide evaluation, feedback, and determine next interview action based on the question content and category.
 `;
