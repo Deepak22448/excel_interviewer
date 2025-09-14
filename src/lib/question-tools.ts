@@ -55,13 +55,13 @@ export const getNextQuestionTool = tool({
       const result = await generateObject({
         model,
         system: questionSelectionSystemPrompt,
-        prompt: createQuestionSelectionPrompt(
+        prompt: createQuestionSelectionPrompt({
           selectionData,
           candidatePerformanceSummary,
           conversationHistory,
           currentQuestionCount,
-          usedQuestionIndices
-        ),
+          usedQuestionIndices,
+        }),
 
         schema: QuestionSelectionSchema,
       });
@@ -141,13 +141,13 @@ export const evaluateResponseTool = tool({
       const result = await generateObject({
         model,
         system: responseEvaluationSystemPrompt,
-        prompt: createResponseEvaluationPrompt(
+        prompt: createResponseEvaluationPrompt({
           originalQuestion,
           candidateResponse,
           questionCategory,
           currentFollowUpCount,
-          conversationContext
-        ),
+          conversationContext,
+        }),
 
         schema: ResponseEvaluationSchema,
       });

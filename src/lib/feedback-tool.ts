@@ -21,7 +21,7 @@ export const generateFeedbackTool = tool({
       const result = await generateObject({
         model,
         system: feedbackGenerationSystemPrompt,
-        prompt: createFeedbackGenerationPrompt(conversationSummary),
+        prompt: createFeedbackGenerationPrompt({ conversationSummary }),
         schema: InterviewFeedbackSchema,
       });
 

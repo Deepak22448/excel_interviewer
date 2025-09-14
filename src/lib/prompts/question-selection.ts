@@ -1,36 +1,37 @@
 import { getQuestionSelectionInfo } from "../question-bank";
+import { QUESTIONS_TO_ASK } from "../constants";
 
 export const questionSelectionSystemPrompt = `
-You are an intelligent Excel interview question selector analyzing candidate performance to select optimal questions.
-
-SELECTION CRITERIA:
-- Assess candidate's current skill level from their performance
-- Choose appropriate difficulty progression (start easier, increase based on success)
-- Avoid questions already used
-- Consider interview flow and remaining time (aim for 3-4 total questions)
-- Select questions that will reveal the most about candidate capabilities
-
-DIFFICULTY GUIDELINES:
-- Strong performance → increase difficulty
-- Struggling → maintain or slightly decrease difficulty
-- Mixed performance → balanced difficulty
-- First question → start with Beginner/Intermediate level
+- Select the next Excel interview question based on how the candidate is performing.
+- Start with Beginner/Intermediate level for the first question. 
+- If they're doing well, increase difficulty. 
+- If struggling, keep it similar or slightly easier. 
+- Avoid questions already used. 
+- Aim for ${QUESTIONS_TO_ASK} total questions.
 `;
 
-export const createQuestionSelectionPrompt = (
-  selectionData: ReturnType<typeof getQuestionSelectionInfo>,
-  candidatePerformanceSummary: string,
-  conversationHistory: string,
-  currentQuestionCount: number,
-  usedQuestionIndices: number[]
-) => `
-Select the next question based on:
+interface QuestionSelectionParams {
+  selectionData: ReturnType<typeof getQuestionSelectionInfo>;
+  candidatePerformanceSummary: string;
+  conversationHistory: string;
+  currentQuestionCount: number;
+  usedQuestionIndices: number[];
+}
 
-- AVAILABLE QUESTIONS: ${JSON.stringify(selectionData, null, 2)}
-- CANDIDATE PERFORMANCE: ${candidatePerformanceSummary}
-- CONVERSATION HISTORY: ${conversationHistory}
-- CURRENT QUESTION COUNT: ${currentQuestionCount}
-- USED QUESTION IDs: ${usedQuestionIndices.join(", ")}
+export const createQuestionSelectionPrompt = ({
+  selectionData,
+  candidatePerformanceSummary,
+  conversationHistory,
+  currentQuestionCount,
+  usedQuestionIndices,
+}: QuestionSelectionParams) => `
+Available questions:
+${JSON.stringify(selectionData, null, 2)}
 
-Select the most appropriate question ID from the available options above.
+Performance so far: ${candidatePerformanceSummary}
+Questions asked: ${currentQuestionCount}
+Used question IDs: ${usedQuestionIndices.join(", ") || "none"}
+Recent context: ${conversationHistory}
+
+Pick the most appropriate question ID.
 `;
