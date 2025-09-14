@@ -7,6 +7,12 @@ import {
   ResponseEvaluationSchema,
 } from "./question-schemas";
 import { model } from "./model";
+import {
+  questionSelectionSystemPrompt,
+  createQuestionSelectionPrompt,
+  responseEvaluationSystemPrompt,
+  createResponseEvaluationPrompt,
+} from "./prompts";
 
 export const getNextQuestionTool = tool({
   description:
@@ -50,40 +56,14 @@ export const getNextQuestionTool = tool({
 
       const result = await generateObject({
         model,
-        system: `\n
-          You are an intelligent Excel interview question selector analyzing candidate performance to select optimal questions.
-
-          SELECTION CRITERIA:
-          - Assess candidate's current skill level from their performance
-          - Choose appropriate difficulty progression (start easier, increase based on success)
-          - Ensure comprehensive skill coverage (formulas, functions, data analysis, best practices)
-          - Avoid questions already used
-          - Consider interview flow and remaining time (aim for 3-4 total questions)
-          - Select questions that will reveal the most about candidate capabilities
-
-          DIFFICULTY GUIDELINES:
-          - Strong performance → increase difficulty
-          - Struggling → maintain or slightly decrease difficulty
-          - Mixed performance → balanced difficulty
-          - First question → start with Beginner/Intermediate level
-
-          SKILL AREA PRIORITIES:
-          - Cover different areas: formulas, functions, dataAnalysis, bestPractices
-          - Adapt based on candidate's demonstrated strengths/weaknesses
-          - Ensure well-rounded assessment
-        \n`,
-
-        prompt: `\n
-          Select the next question based on:
-
-          - AVAILABLE QUESTIONS: ${JSON.stringify(selectionData, null, 2)}
-          - CANDIDATE PERFORMANCE: ${candidatePerformanceSummary}
-          - CONVERSATION HISTORY: ${conversationHistory}
-          - CURRENT QUESTION COUNT: ${currentQuestionCount}
-          - USED QUESTION IDs: ${usedQuestionIndices.join(", ")}
-
-          Select the most appropriate question ID from the available options above.
-        \n`,
+        system: questionSelectionSystemPrompt,
+        prompt: createQuestionSelectionPrompt(
+          selectionData,
+          candidatePerformanceSummary,
+          conversationHistory,
+          currentQuestionCount,
+          usedQuestionIndices
+        ),
 
         schema: QuestionSelectionSchema,
       });
@@ -170,49 +150,16 @@ export const evaluateResponseTool = tool({
 
       const result = await generateObject({
         model,
-        system: `\n
-          You are an expert Excel interview response evaluator with comprehensive responsibilities for assessment and candidate guidance.
-
-          RESPONSE EVALUATION CRITERIA:
-          - Analyze answer accuracy, depth, and technical understanding
-          - Assess completeness against expected components
-          - Evaluate practical knowledge vs theoretical understanding
-          - Identify strengths and knowledge gaps demonstrated
-          - Consider clarity of explanation and communication skills
-
-          FEEDBACK GENERATION GUIDELINES:
-          - Provide immediate constructive feedback to the candidate
-          - Acknowledge correct aspects and good reasoning
-          - Guide toward better understanding where gaps exist
-          - Be encouraging while maintaining professional assessment standards
-          - Keep feedback concise but meaningful (2-3 sentences)
-
-          INTERVIEW FLOW DECISIONS:
-          - Determine if follow-up would reveal deeper insights
-          - Balance thoroughness with interview time constraints
-          - Generate appropriate follow-up questions when beneficial
-          - Signal readiness for next main question when assessment is complete
-
-          QUESTION CATEGORY CONSIDERATIONS:
-          - Formulas: Focus on syntax accuracy and logical understanding
-          - Functions: Evaluate parameter knowledge and practical application
-          - Data Analysis: Assess scalability thinking and methodology
-          - Best Practices: Explore reasoning and real-world implications
-        \n`,
-
-        prompt: `\n
-          Evaluate this candidate response comprehensively:
-
-          - ORIGINAL QUESTION: ${originalQuestion}
-          - CANDIDATE RESPONSE: ${candidateResponse}
-          - EXPECTED COMPONENTS: ${expectedComponents.join(", ")}
-          - FOLLOW-UP TRIGGERS: ${followUpTriggers.join(", ")}
-          - QUESTION CATEGORY: ${questionCategory}
-          - CURRENT FOLLOW-UP COUNT: ${currentFollowUpCount}/2
-          - CONVERSATION CONTEXT: ${conversationContext}
-
-          Provide evaluation, feedback, and determine next interview action.
-        \n`,
+        system: responseEvaluationSystemPrompt,
+        prompt: createResponseEvaluationPrompt(
+          originalQuestion,
+          candidateResponse,
+          expectedComponents,
+          followUpTriggers,
+          questionCategory,
+          currentFollowUpCount,
+          conversationContext
+        ),
 
         schema: ResponseEvaluationSchema,
       });
